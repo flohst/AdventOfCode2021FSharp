@@ -4,3 +4,4 @@ obj/
 
 # Ionide (F#)
 .ionide/
+.fake

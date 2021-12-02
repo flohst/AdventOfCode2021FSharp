@@ -2,11 +2,15 @@
 
 let readLines filename = File.ReadAllLines filename
 
-let isPreviousValueSmaller value previousIndex array =
-    array
-    |> Array.tryItem previousIndex
-    |> Option.map (fun previousValue -> previousValue < value)
-    |> Option.defaultValue false
+let countLargerAsPrevious (list: int []) =
+    list
+    |> Array.windowed 2
+    |> Array.fold
+        (fun acc item ->
+            let prev = item |> Array.item 0
+            let curr = item |> Array.item 1
+            if curr > prev then acc + 1 else acc)
+        0
 
 [<EntryPoint>]
 let main args =
@@ -20,22 +24,18 @@ let main args =
 
     printfn "Read %i lines from %s" lines.Length filename
 
-    let largerThanPrevious =
+    // Part 1
+    let part1 = countLargerAsPrevious lines
+
+    printfn "The solution to part 1 is %i" part1
+
+    // Part 2
+    let part2 =
         lines
-        |> Array.indexed
-        |> Array.fold
-            (fun acc line ->
-                let (index, content) = line
-                let previousIndex = index - 1
+        |> Array.windowed 3
+        |> Array.map (fun item -> item |> Array.sum)
+        |> countLargerAsPrevious
 
-                if index = 0 then
-                    acc
-                elif isPreviousValueSmaller content previousIndex lines then
-                    acc + 1
-                else
-                    acc)
-            0
-
-    printfn "%i values are larger than the previous" largerThanPrevious
+    printfn "The solution to part 2 is %i" part2
 
     0 // return an integer exit code
